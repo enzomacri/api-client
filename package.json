@@ -1,0 +1,12 @@
+{
+  "name": "oauth-api-client",
+  "version": "1.0.0",
+  "description": "lightweigth Api client handling OAuth2 authentication",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["api", "client", "oauth2"],
+  "author": "Enzo Macri",
+  "license": "ISC"
+}

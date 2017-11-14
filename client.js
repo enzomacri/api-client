@@ -30,7 +30,7 @@ var Client = function(apiUrl, config) {
     }
     else {
         this.urls = {
-            api : apiUrl,
+            api : apiUrl + '/',
             token: apiUrl + '/token',
             authorize: apiUrl + '/authorize'
         };
@@ -69,15 +69,12 @@ Client.prototype.getTokens = function() {
 Client.prototype.makeRequest = function(url, params, options, callback) {
     var headers = {};
     var method = 'get';
-
-    if (!Utils.isObject(params)) {
-        if (typeof params === 'function') {
-            callback = params;
-            params = {};
-        }
+    if (typeof params === 'function') {
+        callback = params;
+        params = {};
     }
-    if (typeof method === 'function') {
-        callback = method;
+    if (typeof options === 'function') {
+        callback = options;
     }
     if (Utils.isObject(options)) {
         if (options.method) {
@@ -90,6 +87,7 @@ Client.prototype.makeRequest = function(url, params, options, callback) {
     }
     if (params.access_token) {
         headers.authorization = 'Bearer ' + params.access_token;
+        delete(params.access_token);
     }
 
     request[method](url, params, headers, (err, response) => {
@@ -108,18 +106,25 @@ Client.prototype.makeRequest = function(url, params, options, callback) {
             return callback(new Error(response.body.error.message));
         }
 
+        if (response.statusCode) {
+            if (parseInt(response.statusCode/100) === 4) {
+                return callback(new Error('Invalid request'));
+            }
+            if (parseInt(response.statusCode/100 === 5)) {
+                return callback(new Error('Internal error'));
+            }
+        }
+
         return callback(null, response);
     });
 };
 
 Client.prototype.makeOAuth2Request = function(endpoint, params, options, callback) {
 
-    if (!Utils.isObject(params)) {
-        if (typeof params === 'function') {
-            callback = params;
-            options= {};
-        }
+    if (typeof params === 'function') {
+        callback = params;
         params = {};
+        options= {};
     }
     if (typeof options === 'function') {
         callback = options;
@@ -141,6 +146,7 @@ Client.prototype.makeOAuth2Request = function(endpoint, params, options, callbac
             }
             else return callback(err);
         }
+
         params.access_token = this.access_token;
         return this.makeRequest(this.urls.api + endpoint, params, options, callback);
     });
@@ -164,9 +170,11 @@ function getTokensFromUserCredentials(cb) {
         client_id: this.client_id,
         client_secret: this.client_secret,
         username : this.username,
-        password: this.password,
-        scope: this.scopes.join()
+        password: this.password
     };
+    if (this.scopes && Array.isArray(this.scopes)) {
+        params.scope = this.scopes.join();
+    }
     var config = {
         method : 'post',
         content_type :"application/x-www-form-urlencoded"
@@ -195,9 +203,9 @@ function refreshAccessToken(cb) {
         'content_type': "application/x-www-form-urlencoded",
         'method' : 'post'
     };
-    return this.makeRequest(this.urls.token, params, (err, res) => {
+    return this.makeRequest(this.urls.token, params, config, (err, res) => {
         if (err) return cb(err);
-        this.setTokens(res);
+        this.setTokens(res.body);
         return cb(null, res);
     });
 };
@@ -211,8 +219,10 @@ function getTokensFromAuthorizationCode(cb) {
 };
 
 Client.prototype.getAccessToken = function(callback) {
-    if (this.access_token && this.token_expiration && this.token_expiration > Utils.getTime()) {
-        return callback(null, this.access_token);
+    if (this.access_token) {
+        if (!this.token_expiration ||  this.token_expiration > Utils.getTime()) {
+            return callback(null, this.access_token);
+        }
     }
     if (this.authorization_code) {
         return getTokensFromAuthorizationCode.call(this, callback);

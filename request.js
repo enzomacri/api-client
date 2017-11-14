@@ -7,21 +7,11 @@ var makeRequest = function(path, method, params, headers, callback) {
     if (!path || typeof path !== 'string') {
         return callback(new TypeError("path should be a string"));
     }
-
     if (typeof headers === 'function') {
         callback = headers;
         headers = null;
     }
 
-    if (!headers) {
-        headers = {
-            'Content-Type': "application/json"
-        };
-    }
-
-    if (!headers["Content-Type"]) {
-        headers["Content-Type"] = "application/json";
-    }
 
     if (method === 'get') {
         return makeGetRequest(path, params, headers, callback);
@@ -40,6 +30,16 @@ var makeGetRequest = function(path, params, headers, callback) {
 };
 
 var makePostRequest = function(path, params, headers, callback) {
+
+    if (!headers) {
+        headers = {
+            'Content-Type': "application/json"
+        };
+    }
+
+    if (!headers["Content-Type"]) {
+        headers["Content-Type"] = "application/json";
+    }
 
     switch(headers["Content-Type"]) {
         case "application/json": {

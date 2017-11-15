@@ -103,15 +103,21 @@ Client.prototype.makeRequest = function(url, params, options, callback) {
         }
 
         if (response.body.error && response.body.error.message) {
-            return callback(new Error(response.body.error.message));
+            var error = new Error(response.body.error.message);
+            error.status = response.statusCode;
+            return callback(error);
         }
 
         if (response.statusCode) {
             if (parseInt(response.statusCode/100) === 4) {
-                return callback(new Error('Invalid request'));
+                var error = new Error('Invalid request');
+                error.status = response.statusCode;
+                return callback(error);
             }
             if (parseInt(response.statusCode/100 === 5)) {
-                return callback(new Error('Internal error'));
+                var error = new Error('Internal error');
+                error.status = response.statusCode;
+                return callback(error);
             }
         }
 
@@ -133,22 +139,27 @@ Client.prototype.makeOAuth2Request = function(endpoint, params, options, callbac
 
     this.getAccessToken((err) => {
         if (err) {
-            // TODO if token is invalid try to refresh it
-            if (err.status === 401) {
-                this.refreshAccessToken((err) => {
-                    if (err) {
-                        return callback(err);
-                    } else  {
-                        params.access_token = this.access_token;
-                        return this.makeRequest(this.urls.api + endpoint, params, options, callback);
-                    }
-                });
-            }
-            else return callback(err);
+            return callback(err);
         }
-
         params.access_token = this.access_token;
-        return this.makeRequest(this.urls.api + endpoint, params, options, callback);
+        return this.makeRequest(this.urls.api + endpoint, params, options, (err, res) => {
+            if (err) {
+                if (err.status === 401) {
+                    refreshAccessToken.call(this, (error) => {
+                        if (error) {
+                            return callback(error);
+                        } else {
+                            params.access_token = this.access_token;
+                            return this.makeRequest(this.urls.api + endpoint, params, options, callback);
+                        }
+                    });
+                } else {
+                    return callback(err);
+                }
+            } else {
+                return callback(null, res);
+            }
+        });
     });
 };
 

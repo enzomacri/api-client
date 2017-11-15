@@ -267,7 +267,43 @@ describe('testing Oauth2 API Client', function() {
             });
         });
         it('should try once to refresh access token when getting a 401 error', function(done) {
-            return done();
+            var scope = nock('http://www.example.com')
+                .get('/data')
+                .reply(401, {error: {message: 'test', code: 1}});
+
+            var auth = nock('http://www.example.com')
+                .matchHeader('content-type', 'application/x-www-form-urlencoded')
+                .post('/token', {
+                    grant_type: 'refresh_token',
+                    client_id: 'client',
+                    client_secret: 'ThisIsASecret',
+                    refresh_token: 'refresh'
+                })
+                .reply(200, {
+                    access_token: 'newToken',
+                    expires_in: 5,
+                });
+
+            var success = nock('http://www.example.com')
+                .matchHeader('authorization', 'Bearer newToken')
+                .get('/data')
+                .reply(200, {status:'ok'})
+
+            var config = {
+                client_id: 'client',
+                client_secret: 'ThisIsASecret',
+                access_token: 'tata',
+                refresh_token: 'refresh'
+            };
+            var client = new oauthClient('http://www.example.com', config);
+            client.makeOAuth2Request('data', (err , res) => {
+                if (err) {
+                    return done(err);
+                }
+                assert.isTrue(auth.isDone());
+                assert.equal(res.body.status, 'ok');
+                return done();
+            });
         });
     });
 });

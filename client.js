@@ -18,11 +18,11 @@ var Client = function(apiUrl, config) {
         this.password = config.password;
     }
 
-    if (config.scopes) {
-        if (!Array.isArray(config.scopes)) {
-            config.scopes = [config.scopes];
+    if (config.scope) {
+        if (!Array.isArray(config.scope)) {
+            config.scope = [config.scope];
         }
-        this.scopes = config.scopes;
+        this.scope = config.scope;
     }
 
     if (config.urls) {
@@ -187,8 +187,8 @@ function getTokensFromUserCredentials(cb) {
         username : this.username,
         password: this.password
     };
-    if (this.scopes && Array.isArray(this.scopes)) {
-        params.scope = this.scopes.join();
+    if (this.scope && Array.isArray(this.scope)) {
+        params.scope = this.scope.join(' ');
     }
     var config = {
         method : 'post',

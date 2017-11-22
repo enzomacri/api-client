@@ -137,6 +137,10 @@ Client.prototype.makeOAuth2Request = function(endpoint, params, options, callbac
         options= {};
     }
 
+    if (!params) {
+        params = {}
+    }
+
     this.getAccessToken((err) => {
         if (err) {
             return callback(err);

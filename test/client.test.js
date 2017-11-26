@@ -338,4 +338,32 @@ describe('testing Oauth2 API Client', function() {
 
         });
     });
+    describe('Testing refresh callback', function() {
+        it('should call the provided function when refreshinf tokens', function(done) {
+            var scope = nock('http://www.example.com')
+                .post('/token')
+                .reply(200, {
+                    access_token: 'token',
+                    expires_in: 3,
+                    refresh_token: 'refresh'
+                });
+            var refreshCb = function(tokens) {
+                assert.equal(tokens.access_token, 'token');
+                assert.equal(tokens.expires_in, 3);
+                assert.equal(tokens.refresh_token, 'refresh');
+                done();
+            }
+            var config = {
+                client_id: 'client',
+                client_secret: 'client_secret',
+                refresh_token: 'refresh',
+                refreshCallback: refreshCb
+            };
+
+            var client = new oauthClient('http://www.example.com', config);
+            client.getAccessToken((err, res) => {
+            });
+
+        })
+    })
 });

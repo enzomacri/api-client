@@ -39,6 +39,10 @@ var Client = function(apiUrl, config) {
         this.urls = Object.assign(this.urls, config.urls);
     }
 
+    if (Utils.isFunction(config.refreshCallback)) {
+        this.refreshCb = config.refreshCallback;
+    }
+
     return this;
 };
 
@@ -221,6 +225,9 @@ function refreshAccessToken(cb) {
     return this.makeRequest(this.urls.token, params, config, (err, res) => {
         if (err) return cb(err);
         this.setTokens(res.body);
+        if (Utils.isFunction(this.refreshCb)) {
+            this.refreshCb(res.body);
+        }
         return cb(null, res);
     });
 };

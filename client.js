@@ -23,8 +23,8 @@ var Client = function(apiUrl, config) {
     }
 
     if (config.scope) {
-        if (!Array.isArray(config.scope)) {
-            config.scope = [config.scope];
+        if (Array.isArray(config.scope)) {
+            config.scope = config.scope.join(' ');
         }
         this.scope = config.scope;
     }
@@ -191,8 +191,8 @@ function getTokensFromUserCredentials(cb) {
         username : this.username,
         password: this.password
     };
-    if (this.scope && Array.isArray(this.scope)) {
-        params.scope = this.scope.join(' ');
+    if (this.scope) {
+        params.scope = this.scope;
     }
     var config = {
         method : 'post',

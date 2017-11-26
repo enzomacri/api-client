@@ -123,7 +123,7 @@ const querystring = require('querystring');
                     client_secret: 'ThisIsASecret',
                     username: 'someone@somewhere.internet',
                     password: '123456',
-                    scopes: ['test', 'read', 'write']
+                    scope: ['test', 'read', 'write']
                 };
 
                 var scope = nock('http://www.example.com')
@@ -134,7 +134,7 @@ const querystring = require('querystring');
                         password: '123456',
                         client_id: 'client',
                         client_secret: 'ThisIsASecret',
-                        scope: 'test,read,write'
+                        scope: 'test read write'
                     })
                     .reply(200, function (uri, requestBody) {
                         requestBody = querystring.parse(requestBody);
@@ -156,7 +156,7 @@ const querystring = require('querystring');
                     assert.equal('token', res.body.access_token);
                     assert.equal('refresh', res.body.refresh_token);
                     assert.equal(2, res.body.expires_in);
-                    assert.equal('test,read,write', res.body.scope);
+                    assert.equal('test read write', res.body.scope);
                     return done(err);
                 });
             });

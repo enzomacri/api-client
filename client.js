@@ -4,6 +4,10 @@ const request = require('./request');
 
 var Client = function(apiUrl, config) {
 
+    if (Utils.isObject(apiUrl)) {
+         config = apiUrl;
+         apiUrl = null;
+    }
     config = config || {};
     this.client_id  = config.client_id;
     this.client_secret = config.client_secret;

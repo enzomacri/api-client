@@ -29,20 +29,16 @@ var Client = function(apiUrl, config) {
         this.scope = config.scope;
     }
 
-    if (config.urls) {
-        this.urls = config.urls;
-    }
-    else {
-        this.urls = {
-            api : apiUrl + '/',
-            token: apiUrl + '/token',
-            authorize: apiUrl + '/authorize'
-        };
+    this.urls = {
+        api : apiUrl + '/',
+        token: apiUrl + '/token',
+        authorize: apiUrl + '/authorize'
+    };
 
-        if (config.apiSuffix) {
-            this.urls.api += config.apiSuffix;
-        }
+    if (config.urls) {
+        this.urls = Object.assign(this.urls, config.urls);
     }
+
     return this;
 };
 

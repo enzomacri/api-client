@@ -306,4 +306,36 @@ describe('testing Oauth2 API Client', function() {
             });
         });
     });
+    describe('testing overriding default url', function() {
+        it('should take the urls given in config', function(done) {
+            var scope = nock('http://www.example.com')
+                .post('/retrievetoken')
+                .reply(200, {
+                    access_token: 'token',
+                    expires_in: 2,
+                    refresh_token: 'refresh'
+                })
+                .get('/data')
+                .reply(200, {status : 'ok'});
+
+            var config = {
+                client_id: 'client',
+                client_secret: 'secret',
+                username: 'toto',
+                password: '123456',
+                urls: {
+                    token: 'http://www.example.com/retrievetoken'
+                }
+            };
+
+            var client = new oauthClient('http://www.example.com', config);
+            client.makeOAuth2Request('data', (err, res) => {
+                if (err) return done(err);
+                assert.isTrue(scope.isDone())
+                assert.equal(res.body.status, 'ok');
+                return done();
+            });
+
+        });
+    });
 });

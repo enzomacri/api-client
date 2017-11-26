@@ -8,6 +8,9 @@ var Client = function(apiUrl, config) {
          config = apiUrl;
          apiUrl = null;
     }
+    if (!apiUrl && !config.urls) {
+        throw new Error('Missing Api URL');
+    }
     config = config || {};
     this.client_id  = config.client_id;
     this.client_secret = config.client_secret;

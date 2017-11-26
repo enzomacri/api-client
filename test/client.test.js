@@ -352,7 +352,7 @@ describe('testing Oauth2 API Client', function() {
                 assert.equal(tokens.expires_in, 3);
                 assert.equal(tokens.refresh_token, 'refresh');
                 done();
-            }
+            };
             var config = {
                 client_id: 'client',
                 client_secret: 'client_secret',
@@ -364,6 +364,18 @@ describe('testing Oauth2 API Client', function() {
             client.getAccessToken((err, res) => {
             });
 
-        })
-    })
+        });
+    });
+    describe('Testing missing API URL', function() {
+        it('should throw an error', function() {
+            var config = {
+                client_id: 'client',
+                client_secret: 'secret',
+                username: 'toto',
+                password: 'pwd'
+            };
+
+            assert.throws(function() { new oauthClient(config) }, Error, 'Missing Api URL');
+        });
+    });
 });

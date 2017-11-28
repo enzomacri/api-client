@@ -17,6 +17,7 @@ var Client = function(apiUrl, config) {
 
     if (config.access_token) this.access_token = config.access_token;
     if (config.refresh_token) this.refresh_token = config.refresh_token;
+    if (config.expires_in) this.token_expiration = config.expires_in + Utils.getTime();
 
     if (config.authorization_code) this.authorization_code = config.authorization_code;
 

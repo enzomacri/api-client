@@ -73,9 +73,9 @@ const querystring = require('querystring');
                         return done(err);
                     }
                     assert.isNotNull(res);
-                    assert.equal('token', res.body.access_token);
-                    assert.equal('refresh', res.body.refresh_token);
-                    assert.equal(2, res.body.expires_in)
+                    assert.equal('token', res.access_token);
+                    assert.equal('refresh', res.refresh_token);
+                    assert.equal(2, res.expires_in)
                     var tokens = client.getTokens();
                     assert.equal('token', tokens.access_token);
                     assert.equal(2, tokens.expires_in);
@@ -153,10 +153,10 @@ const querystring = require('querystring');
                 client.getAccessToken((err, res) => {
                     assert.isNull(err);
                     assert.isNotNull(res);
-                    assert.equal('token', res.body.access_token);
-                    assert.equal('refresh', res.body.refresh_token);
-                    assert.equal(2, res.body.expires_in);
-                    assert.equal('test read write', res.body.scope);
+                    assert.equal('token', res.access_token);
+                    assert.equal('refresh', res.refresh_token);
+                    assert.equal(2, res.expires_in);
+                    assert.equal('test read write', res.scope);
                     return done(err);
                 });
             });
@@ -188,8 +188,8 @@ const querystring = require('querystring');
                     }
 
                     assert.isNotNull(res);
-                    assert.equal('token2', res.body.access_token);
-                    assert.equal(5, res.body.expires_in);
+                    assert.equal('token2', res.access_token);
+                    assert.equal(5, res.expires_in);
                     var tokens = client.getTokens();
                     assert.equal('token2', tokens.access_token);
                     assert.equal(5, tokens.expires_in);
@@ -239,8 +239,8 @@ const querystring = require('querystring');
                         return done(err);
                     }
                     assert.isNotNull(res);
-                    assert.equal('token2', res.body.access_token);
-                    assert.equal(5, res.body.expires_in);
+                    assert.equal('token2', res.access_token);
+                    assert.equal(5, res.expires_in);
                     var tokens = client.getTokens();
                     assert.equal('token2', tokens.access_token);
                     assert.equal(5, tokens.expires_in);
@@ -280,8 +280,8 @@ const querystring = require('querystring');
                         return done(err);
                     }
                     assert.isNotNull(res);
-                    assert.equal('token2', res.body.access_token);
-                    assert.equal(5, res.body.expires_in);
+                    assert.equal('token2', res.access_token);
+                    assert.equal(5, res.expires_in);
                     var tokens = client.getTokens();
                     assert.equal('token2', tokens.access_token);
                     assert.equal(5, tokens.expires_in);

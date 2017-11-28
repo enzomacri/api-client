@@ -66,11 +66,14 @@ Client.prototype.setAccessToken = function(accessToken) {
 }
 
 Client.prototype.getTokens = function() {
-    return {
+    const tokens = {
         access_token: this.access_token,
-        expires_in: this.token_expiration - Utils.getTime(),
         refresh_token: this.refresh_token
     };
+    if (this.token_expiration) {
+        tokens.expires_in = this.token_expiration - Utils.getTime();
+    }
+    return tokens;
 };
 
 Client.prototype.makeRequest = function(url, params, options, callback) {
@@ -204,7 +207,7 @@ function getTokensFromUserCredentials(cb) {
     return this.makeRequest(this.urls.token, params, config, (err, res) => {
         if (err) return cb(err);
         this.setTokens(res.body);
-        return cb(null, res);
+        return cb(null, res.body);
     });
 };
 
@@ -231,7 +234,7 @@ function refreshAccessToken(cb) {
         if (Utils.isFunction(this.refreshCb)) {
             this.refreshCb(res.body);
         }
-        return cb(null, res);
+        return cb(null, res.body);
     });
 };
 
@@ -246,7 +249,7 @@ function getTokensFromAuthorizationCode(cb) {
 Client.prototype.getAccessToken = function(callback) {
     if (this.access_token) {
         if (!this.token_expiration ||  this.token_expiration > Utils.getTime()) {
-            return callback(null, this.access_token);
+            return callback(null, this.getTokens());
         }
     }
     if (this.authorization_code) {

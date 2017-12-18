@@ -105,7 +105,7 @@ Client.prototype.makeRequest = function(url, params, options, callback) {
         if (err) {
             return callback(err);
         }
-        if (response.body && !Utils.isObject(response.body)) {
+        if (response.body && (!Utils.isObject(response.body) || response.body instanceof Buffer)) {
             try {
                 switch (response.headers['content-type']) {
                     case 'application/json':

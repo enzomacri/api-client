@@ -24,7 +24,8 @@ var makeGetRequest = function(path, params, headers, callback) {
     var config = {
         uri: path,
         headers: headers,
-        qs: params
+        qs: params,
+        encoding: null
     }
     return request.get(config, callback);
 };
@@ -56,7 +57,8 @@ var makeJsonRequest = function(path, params, headers, callback) {
         uri: path,
         headers : headers,
         body: params,
-        json: true
+        json: true,
+        encoding: null
     };
 
     return request.post(config, callback);
@@ -66,7 +68,8 @@ var makeUrlEncodedRequest = function(path, params, headers, callback) {
     var config = {
         uri: path,
         headers: headers,
-        form: params
+        form: params,
+        encoding: null
     };
     return request.post(config, callback);
 };

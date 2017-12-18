@@ -107,7 +107,14 @@ Client.prototype.makeRequest = function(url, params, options, callback) {
         }
         if (response.body && !Utils.isObject(response.body)) {
             try {
-                response.body = JSON.parse(response.body);
+                switch (response.headers['content-type']) {
+                    case 'application/json':
+                        response.body = JSON.parse(response.body);
+                        break;
+                    case 'application/text':
+                        response.body = response.body.toString();
+                        break;
+                }
             } catch(err) {
                return callback(new Error('Unable to parse response'));
             }

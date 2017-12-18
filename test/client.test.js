@@ -31,6 +31,9 @@ describe('testing Oauth2 API Client', function() {
 
         it('should handle stringified json in response', function(done) {
             var scope = nock('http://www.example.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
                 .get('/data')
                 .reply(200, JSON.stringify({status: 'ok'}));
             var client = new oauthClient('http://www.example.com');
@@ -45,6 +48,9 @@ describe('testing Oauth2 API Client', function() {
         });
         it('should handle invalid stringified json in response', function(done) {
             var scope = nock('http://www.example.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json'
+                })
                 .get('/data')
                 .reply(200, "{'status', 'ok'}");
             var client = new oauthClient('http://www.example.com');

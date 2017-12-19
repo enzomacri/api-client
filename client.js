@@ -20,6 +20,7 @@ var Client = function(apiUrl, config) {
     if (config.expires_in) this.token_expiration = config.expires_in + Utils.getTime();
 
     if (config.authorization_code) this.authorization_code = config.authorization_code;
+    if (config.redirect_uri) this.redirect_uri = config.redirect_uri;
 
     if (config.username && config.password) {
         this.username = config.username;
@@ -246,12 +247,33 @@ function refreshAccessToken(cb) {
     });
 };
 
-// TODO
 function getTokensFromAuthorizationCode(cb) {
-    if (!this.authorization_code) {
+    if (!this.authorization_code || !this.redirect_uri) {
         var err = new Error("Missing args");
         return cb(err);
     }
+    var params = {
+        grant_type: 'authorization_code',
+        client_id: this.client_id,
+        client_secret: this.client_secret,
+        code: this.authorization_code,
+        redirect_uri: this.redirect_uri
+    };
+
+    if (this.scope) {
+        params.scope = this.scope;
+    }
+
+    var config = {
+        method: 'post',
+        content_type: 'application/x-www-form-rulencoded'
+    };
+
+    return this.makeRequest(this.urls.token, params, config, (err, res) => {
+        if (err) return cb(err);
+        this.setTokens(res.body);
+        return cb(null, res.body);
+    });
 };
 
 Client.prototype.getAccessToken = function(callback) {

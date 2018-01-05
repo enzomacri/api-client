@@ -123,6 +123,9 @@ Client.prototype.makeRequest = function(url, params, options, callback) {
 
         if (response.body.error && response.body.error.message) {
             var error = new Error(response.body.error.message);
+            if (response.body.error.code) {
+                error.code = response.body.error.code
+            }
             error.status = response.statusCode;
             return callback(error);
         }

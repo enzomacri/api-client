@@ -136,7 +136,7 @@ Client.prototype.makeRequest = function(url, params, options, callback) {
                 error.status = response.statusCode;
                 return callback(error);
             }
-            if (parseInt(response.statusCode/100 === 5)) {
+            if (parseInt(response.statusCode/100) === 5) {
                 var error = new Error('Internal error');
                 error.status = response.statusCode;
                 return callback(error);

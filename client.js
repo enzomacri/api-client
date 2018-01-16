@@ -27,6 +27,15 @@ var Client = function(apiUrl, config) {
         this.password = config.password;
     }
 
+    // custom function to know whether we should refresh token on request error or not (default on 401 http error)
+    if (config.shouldRefreshToken && typeof config.shouldRefreshToken === 'function') {
+        this.shouldRefreshToken = config.shouldRefreshToken;
+    } else {
+        this.shouldRefreshToken = function(err) {
+            return false;
+        };
+    }
+
     if (config.scope) {
         if (Array.isArray(config.scope)) {
             config.scope = config.scope.join(' ');
@@ -170,7 +179,7 @@ Client.prototype.makeOAuth2Request = function(endpoint, params, options, callbac
         params.access_token = this.access_token;
         return this.makeRequest(this.urls.api + endpoint, params, options, (err, res) => {
             if (err) {
-                if (err.status === 401) {
+                if (err.status === 401 || this.shouldRefreshToken(err)) {
                     refreshAccessToken.call(this, (error) => {
                         if (error) {
                             return callback(error);

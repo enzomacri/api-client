@@ -14,6 +14,7 @@ var Client = function(apiUrl, config) {
     config = config || {};
     this.client_id  = config.client_id;
     this.client_secret = config.client_secret;
+    this.timeout = config.timeout || 10000
 
     if (config.access_token) this.access_token = config.access_token;
     if (config.refresh_token) this.refresh_token = config.refresh_token;
@@ -101,7 +102,7 @@ Client.prototype.makeRequest = function(url, params, options, callback) {
         delete(params.access_token);
     }
 
-    request[method](url, params, headers, (err, response) => {
+    request[method](url, params, headers, { timeout: this.timeout }, (err, response) => {
         if (err) {
             return callback(err);
         }

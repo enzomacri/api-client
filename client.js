@@ -23,6 +23,12 @@ var Client = function(apiUrl, config) {
     if (config.authorization_code) this.authorization_code = config.authorization_code;
     if (config.redirect_uri) this.redirect_uri = config.redirect_uri;
 
+    if (config.user_agent) {
+        this.user_agent = config.user_agent;
+    } else {
+        this.user_agent = 'oauth-api-client';
+    }
+
     if (config.username && config.password) {
         this.username = config.username;
         this.password = config.password;
@@ -112,6 +118,7 @@ Client.prototype.makeRequest = function(url, params, options, callback) {
         delete(params.access_token);
     }
 
+    headers['User-Agent'] = this.user_agent;
     request[method](url, params, headers, { timeout: this.timeout }, (err, response) => {
         if (err) {
             return callback(err);

@@ -13,6 +13,22 @@ describe('testing Oauth2 API Client', function() {
     });
 
     describe('testing making simple request', function() {
+        it('should add user agent', function(done) {
+            var scope = nock('http://www.example.com')
+                .matchHeader('user-agent', 'agent')
+                .get('/data')
+                .reply(200, {'status': 'ok'});
+
+            var client = new oauthClient('http://www.example.com', {user_agent: 'agent'});
+            client.makeRequest('http://www.example.com/data', {}, {}, (err, res) => {
+                if (err) {
+                    return done(err);
+                }
+                assert.isNotNull(res);
+                assert.equal(res.body.status, 'ok');
+                return done();
+            });
+        })
         it('should move access_token from params to Authentication header', function(done) {
             var scope = nock('http://www.example.com')
                 .matchHeader('authorization', 'Bearer token')

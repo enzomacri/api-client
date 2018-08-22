@@ -4,6 +4,9 @@ const nock = require('nock');
 const chai = require('chai'),
     assert = chai.assert;
 const oauthClient = require('../client');
+const ClientError = require('../errors').ClientError;
+const ApiError = require('../errors').ApiError;
+const HttpError = require('../errors').HttpError;
 
 describe('testing Oauth2 API Client', function() {
     beforeEach(function(done) {
@@ -72,6 +75,8 @@ describe('testing Oauth2 API Client', function() {
             var client = new oauthClient('http://www.example.com');
             client.makeRequest('http://www.example.com/data', {}, {}, (err, res) => {
                 assert.isNotNull(err);
+                assert.equal(err.getType(), 'ClientError');
+                assert.instanceOf(err, ClientError);
                 assert.equal(err.message, 'Unable to parse response');
                 return done();
             });
@@ -84,6 +89,8 @@ describe('testing Oauth2 API Client', function() {
             var client = new oauthClient('http://www.example.com');
             client.makeRequest('http://www.example.com/data', {}, {}, (err, res) => {
                 assert.isNotNull(err);
+                assert.instanceOf(err, HttpError);
+                assert.equal(err.getType(), 'HttpError');
                 assert.equal(err.message, 'Invalid request');
                 return done();
             });
@@ -96,6 +103,8 @@ describe('testing Oauth2 API Client', function() {
             var client = new oauthClient('http://www.example.com');
             client.makeRequest('http://www.example.com/data', {}, {}, (err, res) => {
                 assert.isNotNull(err);
+                assert.equal(err.getType(), 'ApiError');
+                assert.instanceOf(err, ApiError);
                 assert.equal(err.message, 'this is an error');
                 return done();
             });

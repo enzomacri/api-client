@@ -1,6 +1,7 @@
 'use strict';
 const Utils = require('./helpers/utils');
 const request = require('./request');
+const {ClientError, HttpError, ApiError} = require('./errors');
 
 var Client = function(apiUrl, config) {
 
@@ -9,7 +10,7 @@ var Client = function(apiUrl, config) {
          apiUrl = null;
     }
     if (!apiUrl && !config.urls) {
-        throw new Error('Missing Api URL');
+        throw new ClientError('Missing Api URL');
     }
     config = config || {};
     this.client_id  = config.client_id;
@@ -134,12 +135,12 @@ Client.prototype.makeRequest = function(url, params, options, callback) {
                         break;
                 }
             } catch(err) {
-               return callback(new Error('Unable to parse response'));
+               return callback(new ClientError('Unable to parse response'));
             }
         }
 
         if (response.body.error && response.body.error.message) {
-            var error = new Error(response.body.error.message);
+            var error = new ApiError(response.body.error.message);
             if (response.body.error.code) {
                 error.code = response.body.error.code
             }
@@ -149,12 +150,12 @@ Client.prototype.makeRequest = function(url, params, options, callback) {
 
         if (response.statusCode) {
             if (parseInt(response.statusCode/100) === 4) {
-                var error = new Error('Invalid request');
+                var error = new HttpError('Invalid request');
                 error.status = response.statusCode;
                 return callback(error);
             }
             if (parseInt(response.statusCode/100) === 5) {
-                var error = new Error('Internal error');
+                var error = new HttpError('Internal error');
                 error.status = response.statusCode;
                 return callback(error);
             }
@@ -216,7 +217,7 @@ Client.prototype.post = function(endpoint, params, callback) {
 
 function getTokensFromUserCredentials(cb) {
     if (!this.username || !this.password || !this.urls.token) {
-        var err = new Error('Missing args to perform user credentials authentication');
+        var err = new ClientError('Missing args to perform user credentials authentication');
         return cb(err);
     }
     var params = {
@@ -242,7 +243,7 @@ function getTokensFromUserCredentials(cb) {
 
 function refreshAccessToken(cb) {
     if (!this.refresh_token || !this.urls.token) {
-        var err = new Error('Missing args for refreshing tokens');
+        var err = new ClientError('Missing args for refreshing tokens');
         return cb(err);
     };
 
@@ -269,7 +270,7 @@ function refreshAccessToken(cb) {
 
 function getTokensFromAuthorizationCode(cb) {
     if (!this.authorization_code || !this.redirect_uri) {
-        var err = new Error("Missing args");
+        var err = new ClientError("Missing args");
         return cb(err);
     }
     var params = {
@@ -311,7 +312,7 @@ Client.prototype.getAccessToken = function(callback) {
     if (this.username && this.password) {
         return getTokensFromUserCredentials.call(this, callback);
     }
-    var err = new Error('Unable to retrieve access token');
+    var err = new ClientError('Unable to retrieve access token');
     if (typeof callback === 'function') return callback(err);
 }
 

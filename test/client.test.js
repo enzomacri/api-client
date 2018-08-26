@@ -104,6 +104,7 @@ describe('testing Oauth2 API Client', function() {
             client.makeRequest('http://www.example.com/data', {}, {}, (err, res) => {
                 assert.isNotNull(err);
                 assert.equal(err.getType(), 'ApiError');
+                assert.equal(err.getCode(), 0);
                 assert.instanceOf(err, ApiError);
                 assert.equal(err.message, 'this is an error');
                 return done();

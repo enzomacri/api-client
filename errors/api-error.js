@@ -1,17 +1,19 @@
 "use strict";
 
-const CustomError = require('./custom-error');
 
-var err = CustomError('ApiError');
+class ApiError extends Error {
+    constructor(message, code) {
+        this.message = message;
+        this.code = code;
+    }
 
-function ApiError(message, code) {
-    err.call(this, message);
-    this.code = code;
-}
+    get code() {
+        return this.code;
+    }
 
-ApiError.prototype = Object.create(err.prototype);
-ApiError.prototype.constructor = ApiError;
-ApiError.prototype.getCode = function() {return this.code;};
-ApiError.prototype.setCode = function(code) {this.code = code;};
+    set code(code) {
+        this.code = code;
+    }
+};
 
 module.exports = ApiError;

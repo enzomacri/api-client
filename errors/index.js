@@ -1,10 +1,8 @@
 "use strict";
 
-const CustomError = require('./custom-error');
+const ClientError = require('./client-error');
 const ApiError = require('./api-error');
-
-var ClientError = CustomError('ClientError');
-var HttpError = CustomError('HttpError');
+const HttpError = require('./http-error');
 
 module.exports = {
     ClientError,

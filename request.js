@@ -2,27 +2,77 @@
 var Utils = require('./helpers/utils');
 var request = require('request');
 
-var makeRequest = function(path, method, params, headers, options, callback) {
-    if (!path || typeof path !== 'string') {
-        return callback(new TypeError("path should be a string"));
-    }
-    if (typeof options === 'function') {
-        callback = options;
-        options = null
-    } else if (typeof headers === 'function') {
-        callback = headers;
-        headers = null;
+class Request {
+    constructor(url) {
+        if (!url || typeof url !== 'string') {
+            throw new TypeError('url should be a string');
+        }
+        this.url = url;
+        this.method = 'get';
     }
 
-    if (method === 'get') {
-        return makeGetRequest(path, params, headers, options, callback);
-    } else {
-        return makePostRequest(path, params, headers, options, callback);
+    setMethod(method) {
+        this.method = method;
+        return this;
     }
-};
 
-var makeGetRequest = function(path, params, headers, options, callback) {
-    var config = {
+    setParams(params) {
+        this.params = params;
+        return this;
+    }
+
+    setTimeout(timeout) {
+        this.timeout = timeout;
+        return this;
+    }
+
+    setHeaders(headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    perform() {
+        const options = {
+            timeout: this.timeout
+        };
+        switch (this.method.toLowerCase()) {
+            case 'post':
+                return new Promise((resolve,reject) => {
+                    makePostRequest(
+                        this.url,
+                        this.params,
+                        this.headers,
+                        options,
+                        (err, response) => {
+                            if (err) {
+                                return reject(err);
+                            }
+                            return resolve(response);
+                        }
+                    );
+                });
+            case 'get':
+            default:
+                return new Promise((resolve, reject) => {
+                    makeGetRequest(
+                        this.url,
+                        this.params,
+                        this.headers,
+                        options,
+                        (err, response) => {
+                            if (err) {
+                                return reject(err);
+                            }
+                            return resolve(response);
+                        }
+                    );
+                });
+        }
+    }
+}
+
+function makeGetRequest(path, params, headers, options, callback) {
+    let config = {
         uri: path,
         headers: headers,
         qs: params,
@@ -35,8 +85,7 @@ var makeGetRequest = function(path, params, headers, options, callback) {
     return request.get(config, callback);
 };
 
-var makePostRequest = function(path, params, headers, options, callback) {
-
+function makePostRequest(path, params, headers, options, callback) {
     if (!headers) {
         headers = {
             'Content-Type': "application/json"
@@ -57,8 +106,8 @@ var makePostRequest = function(path, params, headers, options, callback) {
     }
 };
 
-var makeJsonRequest = function(path, params, headers, options, callback) {
-    var config = {
+function makeJsonRequest(path, params, headers, options, callback) {
+    let config = {
         uri: path,
         headers : headers,
         body: params,
@@ -72,8 +121,8 @@ var makeJsonRequest = function(path, params, headers, options, callback) {
     return request.post(config, callback);
 };
 
-var makeUrlEncodedRequest = function(path, params, headers, options, callback) {
-    var config = {
+function makeUrlEncodedRequest(path, params, headers, options, callback) {
+    let config = {
         uri: path,
         headers: headers,
         form: params,
@@ -86,15 +135,4 @@ var makeUrlEncodedRequest = function(path, params, headers, options, callback) {
     return request.post(config, callback);
 };
 
-var get = function(path, params, headers, options, callback) {
-    return makeRequest(path, 'get', params, headers, options, callback);
-};
-
-var post = function(path, params, headers, options, callback) {
-    return makeRequest(path, 'post', params, headers, options, callback);
-};
-
-module.exports = {
-    get : get,
-    post: post
-};
+module.exports = Request;

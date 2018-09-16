@@ -23,12 +23,13 @@ const ClientError = require('../errors').ClientError;
                     username: 'someone@somewhere.internet'
                 };
                 var client = new oauthClient('http://www.example.com', config);
-                client.getAccessToken(function(err, res) {
-                    assert.isNotNull(err);
-                    assert.instanceOf(err, ClientError);
-                    assert.equal('Unable to retrieve access token', err.message);
-                    done();
-                });
+                client.getAccessToken()
+                    .catch(err => {
+                        assert.isNotNull(err);
+                        assert.instanceOf(err, ClientError);
+                        assert.equal('Unable to retrieve access token', err.message);
+                        done();
+                    });
             });
             it('should throw an error if no username set', function(done) {
                 var config = {
@@ -37,13 +38,13 @@ const ClientError = require('../errors').ClientError;
                     password: '123456'
                 };
                 var client = new oauthClient('http://www.example.com', config);
-                client.getAccessToken(function(err, res) {
-                    assert.isNotNull(err);
-                    assert.instanceOf(err, ClientError);
-                    assert.equal('Unable to retrieve access token', err.message);
-                    done();
-                });
-
+                client.getAccessToken()
+                    .catch(err => {
+                        assert.isNotNull(err);
+                        assert.instanceOf(err, ClientError);
+                        assert.equal('Unable to retrieve access token', err.message);
+                        done();
+                    })
             });
             it('should make an url encoded request', function(done) {
                 var config = {
@@ -69,20 +70,19 @@ const ClientError = require('../errors').ClientError;
                     });
 
                 var client = new oauthClient('http://www.example.com', config);
-                client.getAccessToken((err, res) => {
-                    if (err) {
-                        return done(err);
-                    }
-                    assert.isNotNull(res);
-                    assert.equal('token', res.access_token);
-                    assert.equal('refresh', res.refresh_token);
-                    assert.equal(2, res.expires_in)
-                    var tokens = client.getTokens();
-                    assert.equal('token', tokens.access_token);
-                    assert.equal(2, tokens.expires_in);
-                    assert.equal('refresh', tokens.refresh_token);
-                    return done(err);
-                });
+                client.getAccessToken()
+                    .then(res => {
+                        assert.isNotNull(res);
+                        assert.equal('token', res.access_token);
+                        assert.equal('refresh', res.refresh_token);
+                        assert.equal(2, res.expires_in)
+                        var tokens = client.getTokens();
+                        assert.equal('token', tokens.access_token);
+                        assert.equal(2, tokens.expires_in);
+                        assert.equal('refresh', tokens.refresh_token);
+                        done();
+                    })
+                    .catch(done);
             });
             it('should automatically retrieve tokens when trying to perform a request', function(done) {
                 var scope = nock('http://www.example.com')
@@ -109,14 +109,12 @@ const ClientError = require('../errors').ClientError;
                 };
 
                 var client = new oauthClient('http://www.example.com', config);
-                client.get('data', {}, (err ,res) => {
-                    if (err) {
-                        return done(err);
-                    }
-                    assert.isNotNull(res);
-                    assert.equal('ok', res.body.status);
-                    return done(err);
-                });
+                client.get('data', {})
+                    .then(res => {
+                        assert.isNotNull(res);
+                        assert.equal('ok', res.body.status);
+                        done();
+                    })
             });
             it('should correctly serialize scope', function(done) {
                 var config = {
@@ -151,15 +149,16 @@ const ClientError = require('../errors').ClientError;
                     });
 
                 var client = new oauthClient('http://www.example.com', config);
-                client.getAccessToken((err, res) => {
-                    assert.isNull(err);
-                    assert.isNotNull(res);
-                    assert.equal('token', res.access_token);
-                    assert.equal('refresh', res.refresh_token);
-                    assert.equal(2, res.expires_in);
-                    assert.equal('test read write', res.scope);
-                    return done(err);
-                });
+                client.getAccessToken()
+                    .then(res => {
+                        assert.isNotNull(res);
+                        assert.equal('token', res.access_token);
+                        assert.equal('refresh', res.refresh_token);
+                        assert.equal(2, res.expires_in);
+                        assert.equal('test read write', res.scope);
+                        return done();
+                    })
+                    .catch(done);
             });
         });
         describe('testing Refreshing tokens', function() {
@@ -183,20 +182,18 @@ const ClientError = require('../errors').ClientError;
                     refresh_token: 'refresh'
                 };
                 var client = new oauthClient('http://www.example.com', config);
-                client.getAccessToken((err, res) => {
-                    if(err) {
-                        return done(err);
-                    }
-
-                    assert.isNotNull(res);
-                    assert.equal('token2', res.access_token);
-                    assert.equal(5, res.expires_in);
-                    var tokens = client.getTokens();
-                    assert.equal('token2', tokens.access_token);
-                    assert.equal(5, tokens.expires_in);
-                    assert.equal('refresh', tokens.refresh_token);
-                    return done();
-                });
+                client.getAccessToken()
+                    .then(res => {
+                        assert.isNotNull(res);
+                        assert.equal('token2', res.access_token);
+                        assert.equal(5, res.expires_in);
+                        var tokens = client.getTokens();
+                        assert.equal('token2', tokens.access_token);
+                        assert.equal(5, tokens.expires_in);
+                        assert.equal('refresh', tokens.refresh_token);
+                        return done();
+                    })
+                    .catch(done);
             });
             it('should throw an error if no refresh_token found', function(done) {
                 var config = {
@@ -204,12 +201,13 @@ const ClientError = require('../errors').ClientError;
                     client_secret: 'ThisIsASecret'
                 };
                 var client = new oauthClient('http://www.example.com', config);
-                client.getAccessToken((err, res) => {
-                    assert.isNotNull(err);
-                    assert.instanceOf(err, ClientError);
-                    assert.equal('Unable to retrieve access token', err.message);
-                    return done();
-                });
+                client.getAccessToken()
+                    .catch(err => {
+                        assert.isNotNull(err);
+                        assert.instanceOf(err, ClientError);
+                        assert.equal('Unable to retrieve access token', err.message);
+                        return done();
+                    });
             });
             it('should work fine if access_token is expired and refresh_token is stored', function(done) {
                 var scope = nock('http://www.example.com')
@@ -236,19 +234,18 @@ const ClientError = require('../errors').ClientError;
                     refresh_token: 'refresh',
                     expires_in: -5
                 });
-                client.getAccessToken((err, res) => {
-                    if (err) {
-                        return done(err);
-                    }
-                    assert.isNotNull(res);
-                    assert.equal('token2', res.access_token);
-                    assert.equal(5, res.expires_in);
-                    var tokens = client.getTokens();
-                    assert.equal('token2', tokens.access_token);
-                    assert.equal(5, tokens.expires_in);
-                    assert.equal('refresh', tokens.refresh_token);
-                    return done();
-                });
+                client.getAccessToken()
+                    .then(res => {
+                        assert.isNotNull(res);
+                        assert.equal('token2', res.access_token);
+                        assert.equal(5, res.expires_in);
+                        var tokens = client.getTokens();
+                        assert.equal('token2', tokens.access_token);
+                        assert.equal(5, tokens.expires_in);
+                        assert.equal('refresh', tokens.refresh_token);
+                        return done();
+                    })
+                    .catch(done);
             });
             it('should use refresh_token rather than username & password if both are present', function(done) {
                 var scope = nock('http://www.example.com')
@@ -277,22 +274,20 @@ const ClientError = require('../errors').ClientError;
                     refresh_token: 'refresh',
                     expires_in: -5
                 });
-                client.getAccessToken((err, res) => {
-                    if (err) {
-                        return done(err);
-                    }
-                    assert.isNotNull(res);
-                    assert.equal('token2', res.access_token);
-                    assert.equal(5, res.expires_in);
-                    var tokens = client.getTokens();
-                    assert.equal('token2', tokens.access_token);
-                    assert.equal(5, tokens.expires_in);
-                    assert.equal('refresh', tokens.refresh_token);
-                    return done();
-                });
-
+                client.getAccessToken()
+                    .then(res => {
+                        assert.isNotNull(res);
+                        assert.equal('token2', res.access_token);
+                        assert.equal(5, res.expires_in);
+                        var tokens = client.getTokens();
+                        assert.equal('token2', tokens.access_token);
+                        assert.equal(5, tokens.expires_in);
+                        assert.equal('refresh', tokens.refresh_token);
+                        return done();
+                    })
+                    .catch(done);
             });
-            it('should automatically refresh token when making a request', function() {
+            it('should automatically refresh token when making a request', function(done) {
                var scope = nock('http://www.example.com')
                     .post('/token', {
                         grant_type: 'refresh_token',
@@ -313,19 +308,17 @@ const ClientError = require('../errors').ClientError;
                     refresh_token: 'refresh'
                 };
                 var client = new oauthClient('http://www.example.com', config);
-                client.get('data', {}, (err, res) => {
-                    if(err) {
-                        return done(err);
-                    }
-
-                    assert.isNotNull(res);
-                    assert.equal('ok', res.body.status);
-                    var tokens = client.getTokens();
-                    assert.equal('token2', tokens.access_token);
-                    assert.equal(5, tokens.expires_in);
-                    assert.equal('refresh', tokens.refresh_token);
-                    return done();
-                });
+                client.get('data', {})
+                    .then(res => {
+                        assert.isNotNull(res);
+                        assert.equal('ok', res.body.status);
+                        var tokens = client.getTokens();
+                        assert.equal('token2', tokens.access_token);
+                        assert.equal(5, tokens.expires_in);
+                        assert.equal('refresh', tokens.refresh_token);
+                        return done();
+                    })
+                    .catch(done);
             });
         });
         describe('testing authorization code', function() {

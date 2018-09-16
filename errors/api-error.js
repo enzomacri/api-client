@@ -1,18 +1,12 @@
 "use strict";
 
-
 class ApiError extends Error {
     constructor(message, code) {
-        this.message = message;
+        super(message);
         this.code = code;
     }
-
-    get code() {
-        return this.code;
-    }
-
-    set code(code) {
-        this.code = code;
+    getCode() {
+        return this.code
     }
 };
 

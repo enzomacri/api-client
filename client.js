@@ -142,7 +142,7 @@ class Client {
                                  response.body = JSON.parse(response.body);
                                 break;
                             case 'application/text':
-                                response.body = responsebody.toString();
+                                response.body = response.body.toString();
                                 break;
                         }
                     } catch (err) {
@@ -304,6 +304,7 @@ function getTokensFromAuthorizationCode(cb) {
     return this.makeRequest(this.urls.token, params, config)
         .then(res => {
             this.setTokens(res.body);
+            return res.body;
         })
 };
 

@@ -138,6 +138,7 @@ class Client {
                     try {
                         switch (response.headers['content-type']) {
                             case 'application/json':
+                            case 'text/javascript':
                                  response.body = JSON.parse(response.body);
                                 break;
                             case 'application/text':

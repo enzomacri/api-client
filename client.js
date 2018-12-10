@@ -149,30 +149,37 @@ class Client {
                         return Promise.reject(new ClientError('Unable to parse response'));
                     }
                 }
-
-                if (response.body.error && response.body.error.message) {
-                    const error = new ApiError(response.body.error.message);
-                    if (response.body.error.code !== 'undefined') {
-                        error.code = response.body.error.code;
-                    }
-                    error.status = response.statusCode;
+                const error = this.constructor.parseError(response)
+                if (error) {
                     return Promise.reject(error);
-                }
-
-                if (response.statusCode) {
-                    if (parseInt(response.statusCode/100) === 4) {
-                        const error = new HttpError('Invalid request');
-                        error.status = response.statusCode;
-                        return Promise.reject(error);
-                    }
-                    if (parseInt(response.statusCode/100) === 5) {
-                        const error = new HttpError('Internal error');
-                        error.status = response.statusCode;
-                        return Promise.reject(error);
-                    }
                 }
                 return Promise.resolve(response);
             })
+    }
+
+    static parseError(response) {
+        if (response.body.error && response.body.error.message) {
+            const error = new ApiError(response.body.error.message);
+            if (response.body.error.code !== 'undefined') {
+                error.code = response.body.error.code;
+            }
+            error.status = response.statusCode;
+            return error;
+        }
+
+        if (response.statusCode) {
+            if (parseInt(response.statusCode/100) === 4) {
+                const error = new HttpError('Invalid request');
+                error.status = response.statusCode;
+                return error;
+            }
+            if (parseInt(response.statusCode/100) === 5) {
+                const error = new HttpError('Internal error');
+                error.status = response.statusCode;
+                return error;
+            }
+        }
+        return null;
     }
 
     makeOAuth2Request(endpoint, params, options) {

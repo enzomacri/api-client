@@ -1,6 +1,6 @@
 {
   "name": "oauth-api-client",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "lightweight Api client handling OAuth2 authentication",
   "main": "client.js",
   "scripts": {

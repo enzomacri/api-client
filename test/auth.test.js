@@ -6,6 +6,7 @@ const chai = require('chai'),
 const oauthClient = require('../client');
 const querystring = require('querystring');
 const ClientError = require('../errors').ClientError;
+const ClientErrorCodes = require('../errors').ClientErrorCodes;
 
     describe('testing OAuth2 authentication', function() {
         beforeEach(function(done) {
@@ -28,6 +29,7 @@ const ClientError = require('../errors').ClientError;
                         assert.isNotNull(err);
                         assert.instanceOf(err, ClientError);
                         assert.equal('Unable to retrieve access token', err.message);
+                        assert.equal(ClientErrorCodes.MISSING_ARG, err.code)
                         done();
                     });
             });
@@ -43,6 +45,7 @@ const ClientError = require('../errors').ClientError;
                         assert.isNotNull(err);
                         assert.instanceOf(err, ClientError);
                         assert.equal('Unable to retrieve access token', err.message);
+                        assert.equal(ClientErrorCodes.MISSING_ARG, err.code)
                         done();
                     })
             });
@@ -206,6 +209,7 @@ const ClientError = require('../errors').ClientError;
                         assert.isNotNull(err);
                         assert.instanceOf(err, ClientError);
                         assert.equal('Unable to retrieve access token', err.message);
+                        assert.equal(ClientErrorCodes.MISSING_ARG, err.code)
                         return done();
                     });
             });

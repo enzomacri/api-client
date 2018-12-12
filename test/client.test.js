@@ -7,6 +7,7 @@ const oauthClient = require('../client');
 const ClientError = require('../errors').ClientError;
 const ApiError = require('../errors').ApiError;
 const HttpError = require('../errors').HttpError;
+const ClientErrorCodes = require('../errors').ClientErrorCodes;
 
 describe('testing Oauth2 API Client', function() {
     beforeEach(function(done) {
@@ -75,6 +76,7 @@ describe('testing Oauth2 API Client', function() {
                     assert.isNotNull(err);
                     assert.instanceOf(err, ClientError);
                     assert.equal(err.message, 'Unable to parse response');
+                    assert.equal(ClientErrorCodes.INVALID_BODY, err.getCode());
                     return done();
                 });
         });

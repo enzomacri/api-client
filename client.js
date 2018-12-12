@@ -1,7 +1,12 @@
 'use strict';
 const Utils = require('./helpers/utils');
 const Request = require('./request');
-const {ClientError, HttpError, ApiError} = require('./errors');
+const {
+    ClientError,
+    HttpError,
+    ApiError,
+    ClientErrorCodes
+} = require('./errors');
 
 class Client {
     constructor(baseUrl, config) {
@@ -11,7 +16,7 @@ class Client {
         }
 
         if (!baseUrl && !config.urls) {
-            throw new ClientError('Missing Api URL');
+            throw new ClientError('Missing Api URL', ClientErrorCodes.MISSING_ARG);
         }
 
         config = config || {};
@@ -146,7 +151,12 @@ class Client {
                                 break;
                         }
                     } catch (err) {
-                        return Promise.reject(new ClientError('Unable to parse response'));
+                        return Promise.reject(
+                            new ClientError(
+                                'Unable to parse response',
+                                ClientErrorCodes.INVALID_BODY
+                            )
+                        );
                     }
                 }
                 const error = this.constructor.parseError(response)
@@ -228,14 +238,17 @@ class Client {
             return getTokensFromUserCredentials.call(this);
         }
 
-        const err = new ClientError('Unable to retrieve access token');
+        const err = new ClientError('Unable to retrieve access token', ClientErrorCodes.MISSING_ARG);
         return Promise.reject(err);
     }
 }
 
 function getTokensFromUserCredentials() {
     if (!this.username || !this.password || !this.urls.token) {
-        const err = new ClientError('Missing args to perform user credentials authentication');
+        const err = new ClientError(
+            'Missing args to perform user credentials authentication',
+            ClientErrorCodes.MISSING_ARG_USER_CREDENTIALS
+        );
         return Promise.reject(err);
     }
     var params = {
@@ -261,7 +274,10 @@ function getTokensFromUserCredentials() {
 
 function refreshAccessToken() {
     if (!this.refresh_token || !this.urls.token) {
-        const err = new ClientError('Missing args for refreshing tokens');
+        const err = new ClientError(
+            'Missing args for refreshing tokens',
+            ClientErrorCodes.MISSING_ARG_REFRESH_TOKEN
+        );
         return Promise.reject(err);
     };
 

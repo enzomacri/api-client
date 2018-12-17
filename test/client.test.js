@@ -63,6 +63,24 @@ describe('testing Oauth2 API Client', function() {
                 })
                 .catch(done);
         });
+
+        it('should handle stringified json in response (utf-8)', function(done) {
+            var scope = nock('http://www.example.com')
+                .defaultReplyHeaders({
+                    'Content-Type': 'application/json; charset=utf-8'
+                })
+                .get('/data')
+                .reply(200, JSON.stringify({status: 'ok'}));
+            var client = new oauthClient('http://www.example.com');
+            client.makeRequest('http://www.example.com/data', {}, {})
+                .then(res => {
+                    assert.isNotNull(res);
+                    assert.equal(res.body.status, 'ok');
+                    return done();
+                })
+                .catch(done);
+        });
+
         it('should handle invalid stringified json in response', function(done) {
             var scope = nock('http://www.example.com')
                 .defaultReplyHeaders({

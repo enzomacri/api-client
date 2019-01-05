@@ -1,6 +1,6 @@
 # node-api-client [![Build Status](https://travis-ci.org/enzomacri/api-client.svg?branch=master)](https://travis-ci.org/enzomacri/api-client)
 
-Version > `2.x` is es6 compliant and uses promises
+Version > `2.x.x` is ES6 compliant and uses promises. Please see [ES6 Branch](https://github.com/enzomacri/api-client/tree/emacri-ft-es6)
 
 # Usage
 

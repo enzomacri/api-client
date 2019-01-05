@@ -12,7 +12,7 @@
     "oauth2"
   ],
   "author": "Enzo Macri",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "request": "^2.83.0"
   },

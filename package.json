@@ -4,7 +4,15 @@
   "description": "lightweight Api client handling OAuth2 authentication",
   "main": "client.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha test/"
+    "test": "./node_modules/mocha/bin/mocha test/",
+    "test-cov": "istanbul cover ./node_modules/mocha/bin/_mocha"
+  },
+  "engines": {
+    "node": ">= 6"
+  },
+  "repository":{
+    "type": "git",
+    "url":"https://github.com/enzomacri/api-client"
   },
   "keywords": [
     "api",
@@ -18,6 +26,8 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
+    "codecov": "^3.1.0",
+    "istanbul": "^0.4.5",
     "mocha": "^4.0.1",
     "nock": "^9.1.0"
   }

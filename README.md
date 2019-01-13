@@ -1,4 +1,7 @@
-# node-api-client [![Build Status](https://travis-ci.org/enzomacri/api-client.svg?branch=emacri-ft-es6)](https://travis-ci.org/enzomacri/api-client)[![codecov](https://codecov.io/gh/enzomacri/api-client/branch/emacri-ft-es6/graph/badge.svg)](https://codecov.io/gh/enzomacri/api-client)
+# node-api-client 
+[![NPM](https://nodei.co/npm/oauth-api-client.png?compact=true)](https://nodei.co/npm/oauth-api-client/)
+
+[![Build Status](https://travis-ci.org/enzomacri/api-client.svg?branch=emacri-ft-es6)](https://travis-ci.org/enzomacri/api-client)[![codecov](https://codecov.io/gh/enzomacri/api-client/branch/emacri-ft-es6/graph/badge.svg)](https://codecov.io/gh/enzomacri/api-client)
 
 Version > `2.x` is es6 compliant and uses promises
 

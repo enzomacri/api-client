@@ -145,7 +145,7 @@ class Client {
                             case 'application/json':
                             case 'application/json; charset=utf-8':
                             case 'text/javascript':
-                                 response.body = JSON.parse(response.body);
+                                response.body = JSON.parse(response.body);
                                 break;
                             case 'application/text':
                                 response.body = response.body.toString();
@@ -216,6 +216,10 @@ class Client {
 
     get(endpoint, params) {
         return this.makeOAuth2Request(endpoint, params, {method:'get'});
+    }
+
+    delete(endpoint, params) {
+        return this.makeOAuth2Request(endpoint, params, {method:'delete'});
     }
 
     post(endpoint, params) {

@@ -51,6 +51,21 @@ class Request {
                         }
                     );
                 });
+            case 'delete':
+                return new Promise((resolve,reject) => {
+                    makeDeleteRequest(
+                        this.url,
+                        this.params,
+                        this.headers,
+                        options,
+                        (err, response) => {
+                            if (err) {
+                                return reject(err);
+                            }
+                            return resolve(response);
+                        }
+                    );
+                });
             case 'get':
             default:
                 return new Promise((resolve, reject) => {
@@ -104,6 +119,20 @@ function makePostRequest(path, params, headers, options, callback) {
         default:
             return makeUrlEncodedRequest(path, params, headers, options, callback)
     }
+};
+
+function makeDeleteRequest(path, params, headers, options, callback) {
+    let config = {
+        uri: path,
+        headers: headers,
+        qs: params,
+        encoding: null
+    };
+
+    if (options != null && typeof options === 'object') {
+        config = Object.assign(config, options);
+    }
+    return request.delete(config, callback);
 };
 
 function makeJsonRequest(path, params, headers, options, callback) {

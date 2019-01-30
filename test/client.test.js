@@ -388,6 +388,25 @@ describe('testing Oauth2 API Client', function() {
                 })
                 .catch(done)
         });
+        it('should work with DELETE', function(done) {
+            var scope = nock('http://www.example.com')
+                .matchHeader('Authorization', 'Bearer token')
+                .delete('/data/123')
+                .reply(204)
+
+            var config = {
+                access_token: 'token'
+            };
+            var client = new oauthClient('http://www.example.com', config);
+
+            client.delete('data/123')
+                .then(res => {
+                    assert.isTrue(scope.isDone());
+                    assert.equal(res.statusCode, 204);
+                    return done();
+                })
+                .catch(done);
+        });
     });
     describe('testing overriding default url', function() {
         it('should take the urls given in config', function(done) {

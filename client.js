@@ -141,9 +141,8 @@ class Client {
                         || response.body instanceof Buffer)
                 ) {
                     try {
-                        switch (response.headers['content-type']) {
+                        switch (getContentType(response)) {
                             case 'application/json':
-                            case 'application/json; charset=utf-8':
                             case 'text/javascript':
                                 response.body = JSON.parse(response.body);
                                 break;
@@ -334,6 +333,14 @@ function getTokensFromAuthorizationCode(cb) {
             this.setTokens(res.body);
             return res.body;
         })
+};
+
+function getContentType(response) {
+    if (typeof response.headers['content-type'] === 'string') {
+        const types = response.headers['content-type'].split(';')
+        return types[0].trim()
+    }
+    return response.headers['content-type']
 };
 
 module.exports = Client;

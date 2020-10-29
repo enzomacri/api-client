@@ -325,7 +325,7 @@ function getTokensFromAuthorizationCode(cb) {
 
     var config = {
         method: 'post',
-        content_type: 'application/x-www-form-rulencoded'
+        content_type: 'application/x-www-form-urlencoded'
     };
 
     return this.makeRequest(this.urls.token, params, config)
